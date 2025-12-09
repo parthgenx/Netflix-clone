@@ -21,7 +21,7 @@ const Row = ({ title, fetchURL, rowID }) => {
 
     try {
       await axios.post(
-        "http://localhost:5000/add",
+        "https://netflix-backend-u33z.onrender.com/add",
         {
           id: item.id,
           title: item.title,

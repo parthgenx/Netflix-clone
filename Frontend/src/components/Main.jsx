@@ -37,7 +37,7 @@ const Main = () => {
   // --- NEW: Function to Save Movie (Watch Later) ---
   const saveMovie = async () => {
     const token = localStorage.getItem("token");
-    
+
     if (!token) {
       alert("Please log in to save movies!");
       return;
@@ -45,7 +45,7 @@ const Main = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/add",
+        "https://netflix-backend-u33z.onrender.com/add",
         {
           id: movie.id,
           title: movie.title,
@@ -71,24 +71,26 @@ const Main = () => {
         />
         <div className="absolute w-full top-[20%] p-4 md:p-8">
           <h1 className="text-3xl md:text-5xl font-bold">{movie?.title}</h1>
-          
+
           <div className="my-4">
             {/* Attached the functions to onClick */}
-            <button 
+            <button
               onClick={playTrailer}
               className="border bg-gray-300 text-black border-gray-300 py-2 px-5 hover:bg-gray-400 transition"
             >
               Play
             </button>
-            <button 
+            <button
               onClick={saveMovie}
               className="border text-white border-gray-300 py-2 px-5 ml-4 hover:bg-gray-800 transition"
             >
               Watch Later
             </button>
           </div>
-          
-          <p className="text-gray-400 text-sm">Released: {movie?.release_date}</p>
+
+          <p className="text-gray-400 text-sm">
+            Released: {movie?.release_date}
+          </p>
           <p className="w-full md:max-w-[70%] lg:max-w-[50%] xl:max-w-[35%] text-gray-200">
             {truncateString(movie?.overview, 150)}
           </p>

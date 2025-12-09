@@ -16,10 +16,13 @@ export default function Login() {
 
     try {
       // 1. Send the data to your Backend
-      const response = await axios.post("http://localhost:5000/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "https://netflix-backend-u33z.onrender.com/login",
+        {
+          email,
+          password,
+        }
+      );
 
       // 2. If successful, console log the token
       console.log("Login Success! Token:", response.data.token);

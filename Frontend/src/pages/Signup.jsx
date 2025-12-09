@@ -15,7 +15,7 @@ export default function Signup() {
 
     try {
       // 1. Send data to the Signup Endpoint
-      await axios.post("http://localhost:5000/signup", {
+      await axios.post("https://netflix-backend-u33z.onrender.com/signup", {
         email,
         password,
       });
@@ -23,7 +23,6 @@ export default function Signup() {
       // 2. If successful, redirect to Login page so they can sign in
       alert("Account created! Please log in.");
       navigate("/login");
-      
     } catch (err) {
       console.error(err);
       // Check if the error is "User already exists"
@@ -68,7 +67,7 @@ export default function Signup() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            
+
             <button className="bg-red-600 py-3 rounded font-bold hover:bg-red-700 transition duration-200">
               Sign Up
             </button>
@@ -76,7 +75,7 @@ export default function Signup() {
 
           <div className="mt-10 text-gray-400 text-sm">
             Already have an account?{" "}
-            <span 
+            <span
               onClick={() => navigate("/login")}
               className="text-white hover:underline cursor-pointer font-bold"
             >
