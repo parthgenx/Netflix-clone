@@ -24,9 +24,6 @@ export default function Login() {
         }
       );
 
-      // 2. If successful, console log the token
-      console.log("Login Success! Token:", response.data.token);
-
       // 3. Save the token in the browser's local storage (The Pocket)
       localStorage.setItem("token", response.data.token);
 

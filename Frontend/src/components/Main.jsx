@@ -55,7 +55,6 @@ const Main = () => {
       );
       alert("Movie saved to Watch Later!");
     } catch (error) {
-      console.log(error);
       alert("Movie already in your list!");
     }
   };

@@ -31,7 +31,6 @@ const Row = ({ title, fetchURL, rowID }) => {
       );
       alert("Movie saved!");
     } catch (error) {
-      console.log(error);
       alert("Movie already in your list!");
     }
   };

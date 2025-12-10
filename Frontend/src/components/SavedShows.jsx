@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react"; // The "Close" icon
+import { X } from "lucide-react"; 
 import axios from "axios";
 
 const SavedShows = () => {
   const [movies, setMovies] = useState([]);
 
-  // 1. Fetch the list when the component loads
   useEffect(() => {
     const fetchSavedMovies = async () => {
       try {
@@ -24,7 +23,6 @@ const SavedShows = () => {
     fetchSavedMovies();
   }, []);
 
-  // 2. Logic to Remove a movie
   const deleteShow = async (passedID) => {
     try {
       const token = localStorage.getItem("token");
@@ -34,7 +32,6 @@ const SavedShows = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Update the UI immediately (remove the movie from the local list)
       setMovies((prev) => prev.filter((item) => item.id !== passedID));
     } catch (error) {
       console.log(error);
