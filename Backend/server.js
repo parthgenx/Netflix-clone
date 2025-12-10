@@ -2,14 +2,16 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
+
+dotenv.config();
+
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const verifyToken = require('./middleware/auth');
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // Load environment variables (api keys, passwords)
-dotenv.config();
-
 const app = express();
 const PORT = 5000;
 
@@ -157,6 +159,29 @@ app.get("/mylist", verifyToken, async (req, res) => {
     res.json({ likedMovies: user.likedMovies });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Payment Endpoint
+app.post("/payment", async (req, res) => {
+  const { id } = req.body; // The token ID from the frontend
+
+  try {
+    const payment = await stripe.paymentIntents.create({
+      amount: 50000, // 500 INR * 100 paisa
+      currency: "inr",
+      payment_method: id,
+      confirm: true, // Confirm the payment immediately
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: "never", // Keep it simple for now
+      },
+    });
+
+    res.json({ message: "Payment Successful", success: true });
+  } catch (error) {
+    console.log("Error", error);
+    res.json({ message: "Payment Failed", success: false });
   }
 });
 
