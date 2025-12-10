@@ -2,13 +2,16 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
-
 dotenv.config();
 
-const User = require('./models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const verifyToken = require('./middleware/auth');
+const multer = require("multer");
+const { storage } = require("./config/cloudinary"); // Import the config we just made
+const upload = multer({ storage }); // Initialize the "Mailman" with our storage settings
+
+const User = require("./models/User");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const verifyToken = require("./middleware/auth");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // Load environment variables (api keys, passwords)
@@ -30,7 +33,7 @@ app.get("/", (req, res) => {
   res.send("Server is running!");
 });
 
-app.post('/signup', async (req, res) => {
+app.post("/signup", async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -51,16 +54,17 @@ app.post('/signup', async (req, res) => {
 
     await newUser.save();
 
-    res.status(201).json({ message: "User created successfully", user: newUser });
+    res
+      .status(201)
+      .json({ message: "User created successfully", user: newUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-
 // Login Route
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -86,7 +90,6 @@ app.post('/login', async (req, res) => {
 
     // 4. Send Token to Frontend
     res.status(200).json({ message: "Login Successful", token, user });
-    
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -94,7 +97,7 @@ app.post('/login', async (req, res) => {
 });
 
 // Protected Route
-app.get('/me', verifyToken, async (req, res) => {
+app.get("/me", verifyToken, async (req, res) => {
   // If we are here, the middleware has already passed!
   // We can access req.user because the middleware attached it.
   res.json({ message: "This is a protected route", user: req.user });
@@ -182,6 +185,52 @@ app.post("/payment", async (req, res) => {
   } catch (error) {
     console.log("Error", error);
     res.json({ message: "Payment Failed", success: false });
+  }
+});
+
+// UPLOAD ROUTE: Handles the profile picture
+app.post('/upload', verifyToken, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+
+    // Cloudinary URL
+    const imageUrl = req.file.path;
+
+    // 3. FIND THE USER AND UPDATE THEIR PROFILE
+    // req.user.id comes from the 'verifyToken' middleware
+    await User.findByIdAndUpdate(req.user.id, { 
+      profilePicture: imageUrl 
+    });
+
+    res.json({ 
+      success: true, 
+      imageUrl: imageUrl, 
+      message: "Image saved to database!" 
+    });
+
+  } catch (error) {
+    console.error("Upload Error:", error);
+    res.status(500).json({ success: false, message: "Upload failed" });
+  }
+});
+
+app.get('/api/auth/me', verifyToken, async (req, res) => {
+  try {
+    // 1. Find the user by the ID in the token
+    const user = await User.findById(req.user.id).select('-password'); 
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // 2. Send back the user info (including profilePicture!)
+    res.json({ success: true, user });
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 });
 

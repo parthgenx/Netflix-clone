@@ -129,4 +129,3 @@ const Payment = () => {
 
 export default Payment;
 
-//update payment
